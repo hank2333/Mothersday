@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>妈妈，母亲节快乐</title>
+  <meta
+    name="description"
+    content="一份适合手机打开的母亲节祝福小网页，包含照片、祝福文字与轻柔动画。"
+  >
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <div class="floating-decor" aria-hidden="true">
+      <span class="petal petal-a"></span>
+      <span class="petal petal-b"></span>
+      <span class="petal petal-c"></span>
+      <span class="glow glow-a"></span>
+      <span class="glow glow-b"></span>
+    </div>
+
+    <main>
+      <section class="panel hero-panel" id="hero">
+        <div class="hero-card reveal-up">
+          <p class="hero-kicker">For Mom</p>
+          <h1>妈妈，母亲节快乐</h1>
+          <p class="hero-subtitle">谢谢你一直以来的爱与陪伴，这份小小的礼物想认真地送给你。</p>
+          <div class="hero-note">
+            <span>愿今天温柔、安静、被爱包围。</span>
+          </div>
+          <button class="gift-button particle-button" type="button" data-scroll-target="#scene-one">
+            打开祝福
+          </button>
+        </div>
+      </section>
+
+      <section class="panel story-panel reveal-up" id="scene-one">
+        <div class="scene-media scene-media-full">
+          <img src="assets/ezgif-8bf1f9e1a60bb37c.gif" >
+        </div>
+        <div class="dialog-card">
+          <p class="dialog-speaker">给妈妈的话 · 第一页</p>
+          <div
+            class="typewriter-text"
+            data-lines='[
+              "momo强迫营业...",
+              "嘟嘟噜",
+              "祝奶奶节日快乐，要开心哦"
+            ]'
+          ></div>
+          <button class="gift-button particle-button next-button" type="button" data-scroll-target="#scene-two">
+            下一页
+          </button>
+        </div>
+      </section>
+
+      <section class="panel story-panel reveal-up" id="scene-two">
+        <div class="scene-media scene-media-full">
+          <img src="assets/微信图片_20260508214051_95_195.jpg">
+        </div>
+        <div class="dialog-card">
+          <p class="dialog-speaker">给妈妈的话 · 第二页</p>
+          <div
+            class="typewriter-text"
+            data-lines='[
+              "那年今日",
+              "也是第一次送花给妈妈",
+              "将来也不会少的环节呀"
+            ]'
+          ></div>
+          <button class="gift-button particle-button next-button" type="button" data-scroll-target="#scene-three">
+            继续看
+          </button>
+        </div>
+      </section>
+
+      <section class="panel closing-panel reveal-up" id="scene-three">
+        <div class="closing-photo-wrap">
+          <img class="closing-photo" src="assets/微信图片_20260508210321_94_195.jpg" alt="第三张照片占位图">
+        </div>
+        <div
+          class="closing-message"
+          data-lines='[
+            "本小网站制作不精",
+            "为宝贝大儿刘雨赫使用ai工具制作",
+            "愿你平安、轻松、常常微笑。",
+            "母亲节快乐，也愿往后的每一天都被温柔对待。"
+          ]'
+        >
+          <p>妈妈，谢谢你总是把最好的留给我。</p>
+          <p>以后也想换我做那个提醒你按时休息、记得开心的人。</p>
+          <p>愿你平安、轻松、常常微笑。</p>
+          <p>母亲节快乐，也愿往后的每一天都被温柔对待。</p>
+        </div>
+        <button class="gift-button particle-button" type="button" data-scroll-target="#hero">
+          再看一遍祝福
+        </button>
+      </section>
+    </main>
+  </div>
+
+  <template id="heart-particle-template">
+    <span class="heart-particle">❤</span>
+  </template>
+
+  <script src="script.js"></script>
+</body>
+</html>

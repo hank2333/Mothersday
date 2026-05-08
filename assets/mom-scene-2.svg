@@ -1,0 +1,24 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" rx="48" fill="url(#bg)"/>
+  <circle cx="221" cy="177" r="115" fill="white" fill-opacity="0.38"/>
+  <circle cx="1028" cy="738" r="146" fill="#FFD2DF" fill-opacity="0.55"/>
+  <rect x="142" y="122" width="916" height="656" rx="42" fill="white" fill-opacity="0.7"/>
+  <rect x="190" y="170" width="820" height="560" rx="30" fill="#FFF8F3"/>
+  <path d="M261 251H512" stroke="#E19BAF" stroke-width="18" stroke-linecap="round"/>
+  <path d="M261 307H708" stroke="#EFC0CC" stroke-width="12" stroke-linecap="round"/>
+  <path d="M261 349H621" stroke="#EFC0CC" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="811" cy="448" r="130" fill="#FFF0F5"/>
+  <path d="M778 409C798 377 843 366 874 391C904 416 906 461 884 498C860 538 818 566 811 571C805 566 761 539 737 499C715 462 720 419 748 396C777 372 821 380 842 410" fill="#F6B6C8"/>
+  <path d="M284 583C345 547 443 558 496 617C551 678 545 746 545 746H284V583Z" fill="#FFE1EA"/>
+  <path d="M261 664H534" stroke="#D88AA2" stroke-width="14" stroke-linecap="round"/>
+  <path d="M261 706H651" stroke="#EAB2C0" stroke-width="10" stroke-linecap="round"/>
+  <text x="600" y="814" fill="#9C6D7A" font-size="34" font-family="PingFang SC, Microsoft YaHei, sans-serif" text-anchor="middle">
+    替换为你的第二张照片或 GIF
+  </text>
+  <defs>
+    <linearGradient id="bg" x1="96" y1="84" x2="1112" y2="822" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF6F7"/>
+      <stop offset="1" stop-color="#FFF0E8"/>
+    </linearGradient>
+  </defs>
+</svg>

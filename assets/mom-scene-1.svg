@@ -1,0 +1,24 @@
+<svg width="1200" height="900" viewBox="0 0 1200 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="900" rx="48" fill="url(#bg)"/>
+  <circle cx="969" cy="177" r="115" fill="white" fill-opacity="0.3"/>
+  <circle cx="221" cy="708" r="151" fill="#FFD9E4" fill-opacity="0.5"/>
+  <path d="M354 622C432 543 568 517 665 563C768 611 849 723 955 730" stroke="#D96C8A" stroke-opacity="0.26" stroke-width="16" stroke-linecap="round"/>
+  <rect x="150" y="140" width="900" height="620" rx="36" fill="white" fill-opacity="0.66"/>
+  <rect x="188" y="178" width="824" height="544" rx="28" fill="#FFF7F8"/>
+  <path d="M258 232H515" stroke="#F0B1C3" stroke-width="18" stroke-linecap="round"/>
+  <path d="M258 286H676" stroke="#F6C8D5" stroke-width="12" stroke-linecap="round"/>
+  <path d="M258 330H585" stroke="#F6C8D5" stroke-width="12" stroke-linecap="round"/>
+  <path d="M756 319C797 258 887 246 932 303C975 359 949 447 851 519C753 447 714 381 756 319Z" fill="#F6B6C8"/>
+  <path d="M295 470C342 415 429 406 484 451C542 498 540 592 472 659C397 611 350 576 315 523C306 510 300 492 295 470Z" fill="#FFE1EA"/>
+  <path d="M261 663H546" stroke="#E79AB0" stroke-width="14" stroke-linecap="round"/>
+  <path d="M261 706H644" stroke="#F0B1C3" stroke-width="10" stroke-linecap="round"/>
+  <text x="600" y="804" fill="#9C6D7A" font-size="34" font-family="PingFang SC, Microsoft YaHei, sans-serif" text-anchor="middle">
+    替换为你的第一张照片或 GIF
+  </text>
+  <defs>
+    <linearGradient id="bg" x1="81" y1="66" x2="1125" y2="845" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8FA"/>
+      <stop offset="1" stop-color="#FFEAF0"/>
+    </linearGradient>
+  </defs>
+</svg>
