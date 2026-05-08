@@ -11,6 +11,25 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <audio
+    id="page-bgm"
+    src="assets/bgm.mp3"
+    loop
+    preload="auto"
+  ></audio>
+
+  <button
+    class="music-toggle"
+    id="music-toggle"
+    type="button"
+    aria-pressed="true"
+    aria-label="关闭背景音乐"
+    title="关闭背景音乐"
+  >
+    <span class="music-toggle-icon" aria-hidden="true">♫</span>
+    <span class="music-toggle-text">音乐开</span>
+  </button>
+
   <div class="page-shell">
     <div class="floating-decor" aria-hidden="true">
       <span class="petal petal-a"></span>

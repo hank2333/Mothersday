@@ -45,6 +45,58 @@ button {
   font: inherit;
 }
 
+.music-toggle {
+  position: fixed;
+  top: max(14px, env(safe-area-inset-top));
+  right: 14px;
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.78);
+  border-radius: 999px;
+  background: rgba(255, 251, 252, 0.78);
+  color: var(--text);
+  box-shadow: 0 12px 24px rgba(194, 116, 142, 0.14);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.music-toggle:hover,
+.music-toggle:focus-visible {
+  transform: translateY(-1px);
+  background: rgba(255, 248, 250, 0.94);
+  box-shadow: 0 16px 28px rgba(194, 116, 142, 0.18);
+}
+
+.music-toggle:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.95);
+  outline-offset: 2px;
+}
+
+.music-toggle.is-muted {
+  color: var(--text-soft);
+  background: rgba(250, 244, 246, 0.76);
+}
+
+.music-toggle-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  color: var(--primary);
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.music-toggle-text {
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
 .page-shell {
   position: relative;
   isolation: isolate;
@@ -375,6 +427,13 @@ main {
 
   .hero-card {
     padding: 30px 18px;
+  }
+
+  .music-toggle {
+    top: max(12px, env(safe-area-inset-top));
+    right: 12px;
+    min-height: 38px;
+    padding: 9px 12px;
   }
 
   .scene-media-full {

@@ -7,6 +7,9 @@ const SELECTORS = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  // Initialize background music toggle and autoplay fallback for mobile browsers.
+  setupBackgroundMusic();
+
   // Initialize reveal-on-scroll animation for the main content panels.
   setupRevealAnimations();
 
@@ -19,6 +22,79 @@ document.addEventListener("DOMContentLoaded", () => {
   // Initialize scroll navigation and heart particle burst on button clicks.
   setupButtons();
 });
+
+function setupBackgroundMusic() {
+  const audio = document.querySelector("#page-bgm");
+  const toggle = document.querySelector("#music-toggle");
+
+  if (!audio || !toggle) {
+    return;
+  }
+
+  let wantsMusic = true;
+
+  audio.volume = 0.3;
+
+  const updateMusicButton = (isPlaying) => {
+    toggle.classList.toggle("is-muted", !isPlaying);
+    toggle.setAttribute("aria-pressed", String(isPlaying));
+    toggle.setAttribute("aria-label", isPlaying ? "关闭背景音乐" : "开启背景音乐");
+    toggle.title = isPlaying ? "关闭背景音乐" : "开启背景音乐";
+    const text = toggle.querySelector(".music-toggle-text");
+
+    if (text) {
+      text.textContent = isPlaying ? "音乐开" : "音乐关";
+    }
+  };
+
+  const tryPlayMusic = async () => {
+    if (!wantsMusic || !audio.getAttribute("src")) {
+      updateMusicButton(false);
+      return;
+    }
+
+    try {
+      await audio.play();
+      updateMusicButton(true);
+    } catch {
+      // Some browsers block autoplay until the first user interaction.
+      updateMusicButton(false);
+    }
+  };
+
+  toggle.addEventListener("click", async () => {
+    if (!audio.paused) {
+      wantsMusic = false;
+      audio.pause();
+      updateMusicButton(false);
+      return;
+    }
+
+    wantsMusic = true;
+    await tryPlayMusic();
+  });
+
+  const resumeOnFirstGesture = async () => {
+    if (wantsMusic && audio.paused) {
+      await tryPlayMusic();
+    }
+
+    window.removeEventListener("pointerdown", resumeOnFirstGesture);
+    window.removeEventListener("keydown", resumeOnFirstGesture);
+    window.removeEventListener("touchstart", resumeOnFirstGesture);
+  };
+
+  window.addEventListener("pointerdown", resumeOnFirstGesture, { once: true });
+  window.addEventListener("keydown", resumeOnFirstGesture, { once: true });
+  window.addEventListener("touchstart", resumeOnFirstGesture, { once: true });
+
+  audio.addEventListener("play", () => updateMusicButton(true));
+  audio.addEventListener("pause", () => updateMusicButton(false));
+  audio.addEventListener("error", () => updateMusicButton(false));
+
+  updateMusicButton(true);
+  tryPlayMusic();
+}
 
 function setupRevealAnimations() {
   const revealItems = document.querySelectorAll(SELECTORS.reveal);
