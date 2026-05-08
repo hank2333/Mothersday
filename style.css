@@ -82,6 +82,12 @@ button {
   background: rgba(250, 244, 246, 0.76);
 }
 
+.music-toggle.is-pending {
+  color: var(--primary);
+  background: rgba(255, 247, 250, 0.94);
+  box-shadow: 0 14px 28px rgba(217, 108, 138, 0.16);
+}
+
 .music-toggle-icon {
   display: inline-grid;
   place-items: center;

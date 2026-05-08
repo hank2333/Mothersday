@@ -34,31 +34,38 @@ function setupBackgroundMusic() {
   let wantsMusic = true;
 
   audio.volume = 0.3;
+  audio.load();
 
-  const updateMusicButton = (isPlaying) => {
-    toggle.classList.toggle("is-muted", !isPlaying);
+  const updateMusicButton = (state) => {
+    const isPlaying = state === "playing";
+    const text = toggle.querySelector(".music-toggle-text");
+
+    toggle.classList.toggle("is-muted", state === "paused");
+    toggle.classList.toggle("is-pending", state === "pending");
     toggle.setAttribute("aria-pressed", String(isPlaying));
     toggle.setAttribute("aria-label", isPlaying ? "关闭背景音乐" : "开启背景音乐");
     toggle.title = isPlaying ? "关闭背景音乐" : "开启背景音乐";
-    const text = toggle.querySelector(".music-toggle-text");
 
     if (text) {
-      text.textContent = isPlaying ? "音乐开" : "音乐关";
+      text.textContent =
+        state === "playing" ? "音乐开" :
+        state === "pending" ? "点开音乐" :
+        "音乐关";
     }
   };
 
   const tryPlayMusic = async () => {
     if (!wantsMusic || !audio.getAttribute("src")) {
-      updateMusicButton(false);
+      updateMusicButton("paused");
       return;
     }
 
     try {
       await audio.play();
-      updateMusicButton(true);
+      updateMusicButton("playing");
     } catch {
       // Some browsers block autoplay until the first user interaction.
-      updateMusicButton(false);
+      updateMusicButton("pending");
     }
   };
 
@@ -66,7 +73,7 @@ function setupBackgroundMusic() {
     if (!audio.paused) {
       wantsMusic = false;
       audio.pause();
-      updateMusicButton(false);
+      updateMusicButton("paused");
       return;
     }
 
@@ -84,15 +91,22 @@ function setupBackgroundMusic() {
     window.removeEventListener("touchstart", resumeOnFirstGesture);
   };
 
-  window.addEventListener("pointerdown", resumeOnFirstGesture, { once: true });
+  window.addEventListener("pointerdown", resumeOnFirstGesture, { once: true, passive: true });
   window.addEventListener("keydown", resumeOnFirstGesture, { once: true });
-  window.addEventListener("touchstart", resumeOnFirstGesture, { once: true });
+  window.addEventListener("touchstart", resumeOnFirstGesture, { once: true, passive: true });
 
-  audio.addEventListener("play", () => updateMusicButton(true));
-  audio.addEventListener("pause", () => updateMusicButton(false));
-  audio.addEventListener("error", () => updateMusicButton(false));
+  audio.addEventListener("play", () => updateMusicButton("playing"));
+  audio.addEventListener("pause", () => {
+    if (wantsMusic) {
+      updateMusicButton("pending");
+      return;
+    }
 
-  updateMusicButton(true);
+    updateMusicButton("paused");
+  });
+  audio.addEventListener("error", () => updateMusicButton("paused"));
+
+  updateMusicButton("pending");
   tryPlayMusic();
 }
 
