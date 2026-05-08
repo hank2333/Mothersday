@@ -48,6 +48,7 @@ button {
 .music-toggle {
   position: fixed;
   top: max(14px, env(safe-area-inset-top));
+  left: auto;
   right: 14px;
   z-index: 30;
   display: inline-flex;
@@ -437,6 +438,7 @@ main {
 
   .music-toggle {
     top: max(12px, env(safe-area-inset-top));
+    left: auto;
     right: 12px;
     min-height: 38px;
     padding: 9px 12px;

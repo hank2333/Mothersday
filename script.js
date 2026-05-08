@@ -7,19 +7,10 @@ const SELECTORS = {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  // Initialize background music toggle and autoplay fallback for mobile browsers.
   setupBackgroundMusic();
-
-  // Initialize reveal-on-scroll animation for the main content panels.
   setupRevealAnimations();
-
-  // Initialize typewriter playback for dialogue sections when they enter view.
   setupTypewriters();
-
-  // Initialize line-by-line fade-in for the closing message panel.
   setupClosingMessage();
-
-  // Initialize scroll navigation and heart particle burst on button clicks.
   setupButtons();
 });
 
@@ -32,13 +23,15 @@ function setupBackgroundMusic() {
   }
 
   let wantsMusic = true;
+  let unlocked = false;
+  const text = toggle.querySelector(".music-toggle-text");
 
-  audio.volume = 0.3;
+  audio.volume = 0.35;
+  audio.preload = "auto";
   audio.load();
 
-  const updateMusicButton = (state) => {
+  function setButtonState(state) {
     const isPlaying = state === "playing";
-    const text = toggle.querySelector(".music-toggle-text");
 
     toggle.classList.toggle("is-muted", state === "paused");
     toggle.classList.toggle("is-pending", state === "pending");
@@ -47,67 +40,93 @@ function setupBackgroundMusic() {
     toggle.title = isPlaying ? "关闭背景音乐" : "开启背景音乐";
 
     if (text) {
-      text.textContent =
-        state === "playing" ? "音乐开" :
-        state === "pending" ? "点开音乐" :
-        "音乐关";
+      if (state === "playing") {
+        text.textContent = "音乐开";
+      } else if (state === "pending") {
+        text.textContent = "点开音乐";
+      } else {
+        text.textContent = "音乐关";
+      }
     }
-  };
+  }
 
-  const tryPlayMusic = async () => {
-    if (!wantsMusic || !audio.getAttribute("src")) {
-      updateMusicButton("paused");
-      return;
+  async function playMusic() {
+    if (!wantsMusic || !audio.currentSrc) {
+      setButtonState("paused");
+      return false;
     }
 
     try {
       await audio.play();
-      updateMusicButton("playing");
+      unlocked = true;
+      setButtonState("playing");
+      return true;
     } catch {
-      // Some browsers block autoplay until the first user interaction.
-      updateMusicButton("pending");
+      setButtonState("pending");
+      return false;
     }
-  };
+  }
 
-  toggle.addEventListener("click", async () => {
-    if (!audio.paused) {
+  function pauseMusic(manual = false) {
+    if (manual) {
       wantsMusic = false;
-      audio.pause();
-      updateMusicButton("paused");
+    }
+
+    audio.pause();
+    setButtonState(manual ? "paused" : "pending");
+  }
+
+  async function unlockAndPlay() {
+    if (!wantsMusic) {
+      return;
+    }
+
+    await playMusic();
+  }
+
+  async function onToggleClick() {
+    if (!audio.paused) {
+      pauseMusic(true);
       return;
     }
 
     wantsMusic = true;
-    await tryPlayMusic();
+    await unlockAndPlay();
+  }
+
+  async function onFirstGesture() {
+    if (!unlocked && wantsMusic && audio.paused) {
+      await unlockAndPlay();
+    }
+  }
+
+  toggle.addEventListener("click", onToggleClick);
+
+  window.addEventListener("pointerdown", onFirstGesture, { passive: true });
+  window.addEventListener("touchend", onFirstGesture, { passive: true });
+  window.addEventListener("keydown", onFirstGesture);
+
+  audio.addEventListener("play", () => {
+    unlocked = true;
+    setButtonState("playing");
   });
 
-  const resumeOnFirstGesture = async () => {
-    if (wantsMusic && audio.paused) {
-      await tryPlayMusic();
-    }
-
-    window.removeEventListener("pointerdown", resumeOnFirstGesture);
-    window.removeEventListener("keydown", resumeOnFirstGesture);
-    window.removeEventListener("touchstart", resumeOnFirstGesture);
-  };
-
-  window.addEventListener("pointerdown", resumeOnFirstGesture, { once: true, passive: true });
-  window.addEventListener("keydown", resumeOnFirstGesture, { once: true });
-  window.addEventListener("touchstart", resumeOnFirstGesture, { once: true, passive: true });
-
-  audio.addEventListener("play", () => updateMusicButton("playing"));
   audio.addEventListener("pause", () => {
     if (wantsMusic) {
-      updateMusicButton("pending");
+      setButtonState("pending");
       return;
     }
 
-    updateMusicButton("paused");
+    setButtonState("paused");
   });
-  audio.addEventListener("error", () => updateMusicButton("paused"));
 
-  updateMusicButton("pending");
-  tryPlayMusic();
+  audio.addEventListener("error", () => {
+    wantsMusic = false;
+    setButtonState("paused");
+  });
+
+  setButtonState("pending");
+  playMusic();
 }
 
 function setupRevealAnimations() {
@@ -128,7 +147,6 @@ function setupRevealAnimations() {
 
 function setupTypewriters() {
   const blocks = document.querySelectorAll(SELECTORS.typewriter);
-
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -154,7 +172,6 @@ async function playTypewriter(element) {
     const lineNode = document.createElement("span");
     lineNode.className = "typewriter-line";
     element.appendChild(lineNode);
-
     await typeLine(lineNode, line);
     await wait(260);
   }
