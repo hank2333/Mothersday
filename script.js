@@ -24,12 +24,16 @@ function setupBackgroundMusic() {
     return;
   }
 
+  const isWeChat = /MicroMessenger/i.test(navigator.userAgent);
   let wantsMusic = true;
   let unlocked = false;
+  let modalTimerId = 0;
   const text = toggle.querySelector(".music-toggle-text");
 
   audio.volume = 0.35;
   audio.preload = "auto";
+  audio.setAttribute("playsinline", "");
+  audio.setAttribute("webkit-playsinline", "");
   audio.load();
 
   function setButtonState(state) {
@@ -41,15 +45,21 @@ function setupBackgroundMusic() {
     toggle.setAttribute("aria-label", isPlaying ? "关闭背景音乐" : "开启背景音乐");
     toggle.title = isPlaying ? "关闭背景音乐" : "开启背景音乐";
 
-    if (text) {
-      if (state === "playing") {
-        text.textContent = "音乐开";
-      } else if (state === "pending") {
-        text.textContent = "点开音乐";
-      } else {
-        text.textContent = "音乐关";
-      }
+    if (!text) {
+      return;
     }
+
+    if (state === "playing") {
+      text.textContent = "音乐开";
+      return;
+    }
+
+    if (state === "pending") {
+      text.textContent = "点开音乐";
+      return;
+    }
+
+    text.textContent = "音乐关";
   }
 
   function showMusicModal() {
@@ -68,6 +78,25 @@ function setupBackgroundMusic() {
     modal.hidden = true;
   }
 
+  function clearModalTimer() {
+    if (!modalTimerId) {
+      return;
+    }
+
+    window.clearTimeout(modalTimerId);
+    modalTimerId = 0;
+  }
+
+  function scheduleModalFallback() {
+    clearModalTimer();
+    modalTimerId = window.setTimeout(() => {
+      if (wantsMusic && audio.paused) {
+        setButtonState("pending");
+        showMusicModal();
+      }
+    }, isWeChat ? 900 : 1400);
+  }
+
   async function playMusic() {
     if (!wantsMusic || !audio.currentSrc) {
       setButtonState("paused");
@@ -77,12 +106,13 @@ function setupBackgroundMusic() {
     try {
       await audio.play();
       unlocked = true;
+      clearModalTimer();
       hideMusicModal();
       setButtonState("playing");
       return true;
     } catch {
       setButtonState("pending");
-      showMusicModal();
+      scheduleModalFallback();
       return false;
     }
   }
@@ -90,9 +120,10 @@ function setupBackgroundMusic() {
   function pauseMusic(manual = false) {
     if (manual) {
       wantsMusic = false;
-      hideMusicModal();
     }
 
+    clearModalTimer();
+    hideMusicModal();
     audio.pause();
     setButtonState(manual ? "paused" : "pending");
   }
@@ -105,7 +136,13 @@ function setupBackgroundMusic() {
     await playMusic();
   }
 
-  async function onToggleClick() {
+  async function handleUserUnlock() {
+    if (!unlocked && wantsMusic && audio.paused) {
+      await unlockAndPlay();
+    }
+  }
+
+  async function handleToggleClick() {
     if (!audio.paused) {
       pauseMusic(true);
       return;
@@ -115,13 +152,15 @@ function setupBackgroundMusic() {
     await unlockAndPlay();
   }
 
-  async function onFirstGesture() {
-    if (!unlocked && wantsMusic && audio.paused) {
-      await unlockAndPlay();
+  async function handleWeChatBridgeReady() {
+    if (!wantsMusic || !audio.paused) {
+      return;
     }
+
+    await unlockAndPlay();
   }
 
-  toggle.addEventListener("click", onToggleClick);
+  toggle.addEventListener("click", handleToggleClick);
 
   if (modalButton) {
     modalButton.addEventListener("click", async () => {
@@ -130,18 +169,30 @@ function setupBackgroundMusic() {
     });
   }
 
-  window.addEventListener("pointerdown", onFirstGesture, { passive: true });
-  window.addEventListener("touchend", onFirstGesture, { passive: true });
-  window.addEventListener("keydown", onFirstGesture);
+  document.addEventListener("pointerdown", handleUserUnlock, { passive: true });
+  document.addEventListener("touchend", handleUserUnlock, { passive: true });
+  document.addEventListener("click", handleUserUnlock, { passive: true });
+  document.addEventListener("keydown", handleUserUnlock);
+  document.addEventListener("WeixinJSBridgeReady", handleWeChatBridgeReady, false);
+  document.addEventListener("YixinJSBridgeReady", handleWeChatBridgeReady, false);
+
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden && wantsMusic && audio.paused) {
+      unlockAndPlay();
+    }
+  });
 
   audio.addEventListener("play", () => {
     unlocked = true;
+    clearModalTimer();
+    hideMusicModal();
     setButtonState("playing");
   });
 
   audio.addEventListener("pause", () => {
     if (wantsMusic) {
       setButtonState("pending");
+      scheduleModalFallback();
       return;
     }
 
@@ -150,12 +201,18 @@ function setupBackgroundMusic() {
 
   audio.addEventListener("error", () => {
     wantsMusic = false;
+    clearModalTimer();
     hideMusicModal();
     setButtonState("paused");
   });
 
   setButtonState("pending");
+  scheduleModalFallback();
   playMusic();
+
+  if (isWeChat) {
+    showMusicModal();
+  }
 }
 
 function setupRevealAnimations() {
