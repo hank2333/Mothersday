@@ -52,6 +52,32 @@ function setupBackgroundMusic() {
     }
   }
 
+  function primeAudioElement() {
+    try {
+      audio.muted = true;
+      const playAttempt = audio.play();
+
+      if (playAttempt && typeof playAttempt.then === "function") {
+        playAttempt
+          .then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.muted = false;
+          })
+          .catch(() => {
+            audio.muted = false;
+          });
+        return;
+      }
+
+      audio.pause();
+      audio.currentTime = 0;
+      audio.muted = false;
+    } catch {
+      audio.muted = false;
+    }
+  }
+
   function setButtonState(state) {
     const isPlaying = state === "playing";
 
@@ -133,6 +159,35 @@ function setupBackgroundMusic() {
     }
   }
 
+  function attemptPlayFromUserGesture() {
+    if (!wantsMusic || !audio.currentSrc) {
+      setButtonState("paused");
+      return;
+    }
+
+    const playAttempt = audio.play();
+
+    if (playAttempt && typeof playAttempt.then === "function") {
+      playAttempt
+        .then(() => {
+          unlocked = true;
+          clearModalTimer();
+          hideMusicModal();
+          setButtonState("playing");
+        })
+        .catch(() => {
+          setButtonState("pending");
+          showMusicModal();
+        });
+      return;
+    }
+
+    unlocked = true;
+    clearModalTimer();
+    hideMusicModal();
+    setButtonState("playing");
+  }
+
   async function playMusicWithWeChatBridge() {
     if (!isWeChat) {
       return playMusic();
@@ -178,7 +233,11 @@ function setupBackgroundMusic() {
     }
 
     wantsMusic = true;
-    await unlockAndPlay();
+    attemptPlayFromUserGesture();
+
+    if (audio.paused) {
+      await unlockAndPlay();
+    }
   }
 
   async function handleWeChatBridgeReady() {
@@ -192,16 +251,22 @@ function setupBackgroundMusic() {
   toggle.addEventListener("click", handleToggleClick);
 
   if (modalButton) {
-    modalButton.addEventListener("click", async () => {
+    const handleModalPress = async (event) => {
+      event.preventDefault();
       wantsMusic = true;
-      modalButton.disabled = true;
-      await unlockAndPlay();
-      modalButton.disabled = false;
+      attemptPlayFromUserGesture();
+
+      if (audio.paused) {
+        await unlockAndPlay();
+      }
 
       if (audio.paused) {
         showMusicModal();
       }
-    });
+    };
+
+    modalButton.addEventListener("click", handleModalPress);
+    modalButton.addEventListener("touchend", handleModalPress, { passive: false });
   }
 
   document.addEventListener("pointerdown", handleUserUnlock, { passive: true });
@@ -243,6 +308,7 @@ function setupBackgroundMusic() {
 
   setButtonState("pending");
   scheduleModalFallback();
+  primeAudioElement();
   playMusicWithWeChatBridge();
 
   if (isWeChat) {
