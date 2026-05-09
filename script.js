@@ -36,6 +36,22 @@ function setupBackgroundMusic() {
   audio.setAttribute("webkit-playsinline", "");
   audio.load();
 
+  function withWeChatBridge(callback) {
+    if (typeof window.WeixinJSBridge === "undefined") {
+      callback();
+      return;
+    }
+
+    try {
+      // In WeChat WebView, invoking a bridge API first often helps unlock media playback.
+      window.WeixinJSBridge.invoke("getNetworkType", {}, () => {
+        callback();
+      });
+    } catch {
+      callback();
+    }
+  }
+
   function setButtonState(state) {
     const isPlaying = state === "playing";
 
@@ -117,6 +133,19 @@ function setupBackgroundMusic() {
     }
   }
 
+  async function playMusicWithWeChatBridge() {
+    if (!isWeChat) {
+      return playMusic();
+    }
+
+    return new Promise((resolve) => {
+      withWeChatBridge(async () => {
+        const played = await playMusic();
+        resolve(played);
+      });
+    });
+  }
+
   function pauseMusic(manual = false) {
     if (manual) {
       wantsMusic = false;
@@ -133,7 +162,7 @@ function setupBackgroundMusic() {
       return;
     }
 
-    await playMusic();
+    await playMusicWithWeChatBridge();
   }
 
   async function handleUserUnlock() {
@@ -157,7 +186,7 @@ function setupBackgroundMusic() {
       return;
     }
 
-    await unlockAndPlay();
+    await playMusicWithWeChatBridge();
   }
 
   toggle.addEventListener("click", handleToggleClick);
@@ -165,7 +194,13 @@ function setupBackgroundMusic() {
   if (modalButton) {
     modalButton.addEventListener("click", async () => {
       wantsMusic = true;
+      modalButton.disabled = true;
       await unlockAndPlay();
+      modalButton.disabled = false;
+
+      if (audio.paused) {
+        showMusicModal();
+      }
     });
   }
 
@@ -208,7 +243,7 @@ function setupBackgroundMusic() {
 
   setButtonState("pending");
   scheduleModalFallback();
-  playMusic();
+  playMusicWithWeChatBridge();
 
   if (isWeChat) {
     showMusicModal();
