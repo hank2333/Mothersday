@@ -17,6 +17,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function setupBackgroundMusic() {
   const audio = document.querySelector("#page-bgm");
   const toggle = document.querySelector("#music-toggle");
+  const modal = document.querySelector("#music-modal");
+  const modalButton = document.querySelector("#music-modal-button");
 
   if (!audio || !toggle) {
     return;
@@ -50,6 +52,22 @@ function setupBackgroundMusic() {
     }
   }
 
+  function showMusicModal() {
+    if (!modal || !wantsMusic || unlocked || !audio.paused) {
+      return;
+    }
+
+    modal.hidden = false;
+  }
+
+  function hideMusicModal() {
+    if (!modal) {
+      return;
+    }
+
+    modal.hidden = true;
+  }
+
   async function playMusic() {
     if (!wantsMusic || !audio.currentSrc) {
       setButtonState("paused");
@@ -59,10 +77,12 @@ function setupBackgroundMusic() {
     try {
       await audio.play();
       unlocked = true;
+      hideMusicModal();
       setButtonState("playing");
       return true;
     } catch {
       setButtonState("pending");
+      showMusicModal();
       return false;
     }
   }
@@ -70,6 +90,7 @@ function setupBackgroundMusic() {
   function pauseMusic(manual = false) {
     if (manual) {
       wantsMusic = false;
+      hideMusicModal();
     }
 
     audio.pause();
@@ -102,6 +123,13 @@ function setupBackgroundMusic() {
 
   toggle.addEventListener("click", onToggleClick);
 
+  if (modalButton) {
+    modalButton.addEventListener("click", async () => {
+      wantsMusic = true;
+      await unlockAndPlay();
+    });
+  }
+
   window.addEventListener("pointerdown", onFirstGesture, { passive: true });
   window.addEventListener("touchend", onFirstGesture, { passive: true });
   window.addEventListener("keydown", onFirstGesture);
@@ -122,6 +150,7 @@ function setupBackgroundMusic() {
 
   audio.addEventListener("error", () => {
     wantsMusic = false;
+    hideMusicModal();
     setButtonState("paused");
   });
 

@@ -104,6 +104,58 @@ button {
   white-space: nowrap;
 }
 
+.music-modal[hidden] {
+  display: none;
+}
+
+.music-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(255, 245, 248, 0.36);
+  backdrop-filter: blur(10px);
+}
+
+.music-modal-card {
+  width: min(100%, 320px);
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 22px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.88);
+  border-radius: 24px;
+  background: rgba(255, 252, 253, 0.94);
+  color: var(--text);
+  box-shadow: 0 22px 44px rgba(194, 116, 142, 0.18);
+  cursor: pointer;
+  text-align: center;
+}
+
+.music-modal-card strong {
+  font-size: 1.02rem;
+  font-weight: 700;
+}
+
+.music-modal-copy {
+  color: var(--text-soft);
+  font-size: 0.92rem;
+  line-height: 1.7;
+}
+
+.music-modal-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(246, 182, 200, 0.2);
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
 .page-shell {
   position: relative;
   isolation: isolate;
@@ -442,6 +494,15 @@ main {
     right: 12px;
     min-height: 38px;
     padding: 9px 12px;
+  }
+
+  .music-modal {
+    padding: 18px;
+  }
+
+  .music-modal-card {
+    width: min(100%, 300px);
+    padding: 20px 18px;
   }
 
   .scene-media-full {
